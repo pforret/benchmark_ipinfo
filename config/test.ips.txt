@@ -1,10 +1,7 @@
-# www.dropbox.com
-162.125.65.18
-# the-piratebay.com via CloudFlare
-188.114.96.0
-# blog.forret.com via Github Pages
-185.199.111.153
-# www.forret.com on Gandi
-217.70.180.136
-
-
+162.125.65.18           # www.dropbox.com
+185.199.111.153         # blog.forret.com via Github Pages
+188.114.96.0            # the-piratebay.com via CloudFlare
+188.166.57.197          # nuuz.io via DigitalOcean
+208.67.222.222          # OpenDns DNS
+217.70.180.136          # www.forret.com on Gandi
+8.8.8.8                 # Google DNS

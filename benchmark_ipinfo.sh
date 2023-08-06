@@ -24,7 +24,7 @@ option|l|log_dir|folder for log files |$HOME/log/$script_prefix
 option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
 option|O|OUT_DIR|output folder|output
 choice|1|action|action to perform|run,ip,list,check,env,update
-#param|?|input|input file/text
+param|?|input|input ip address
 " -v -e '^#' -e '^\s*$'
 }
 
@@ -42,7 +42,7 @@ Script:main() {
       #TIP: use «$script_prefix run» to check all IP addresses and all IP API services
       #TIP:> $script_prefix run
       for ip in $(list_test_ips) ; do
-        IO:success "#  IP: $ip"
+        IO:success "#  IP: $ip                         "
         for service in $(list_services) ; do
           IO:progress " - SVC: $service"
           get_ip_info "$ip" "$service"
@@ -53,8 +53,8 @@ Script:main() {
     ip)
       #TIP: use «$script_prefix ip» to check one IP address for all IP API Services
       #TIP:> $script_prefix ip 1.1.1.1
-        for service in $(INI:list_sections) ; do
-          get_ip_info "$ip" "$service"
+        for service in $(list_services) ; do
+          get_ip_info "$input" "$service"
         done
       ;;
 
@@ -115,6 +115,8 @@ function get_ip_info(){
     load_service_parameters "$service"
     url="${ini_values[endpoint]}"
     url=$(echo "$url" | awk -v ip="$ip" '{gsub(/{ip}/, ip); print}')
+    url=$(eval echo "${url//&/\\&}")
+    IO:debug "Getting URL $url"
     curl -s "$url" | jq . > "$output_file"
   fi
 
@@ -204,6 +206,23 @@ quiet=0
 [[ $# -gt 0 ]] && [[ $1 == "-q" ]] && quiet=1
 
 ### stdIO:print/stderr output
+txtReset=""
+txtError=""
+txtInfo=""
+txtInfo=""
+txtWarn=""
+txtBold=""
+txtItalic=""
+txtUnderline=""
+char_succes="OK "
+char_fail="!! "
+char_alert="?? "
+char_wait="..."
+info_icon="(i)"
+config_icon="[c]"
+clean_icon="[c]"
+require_icon="[r]"
+
 function IO:initialize() {
   script_started_at="$(Tool:time)"
   IO:debug "script $script_basename started at $script_started_at"
@@ -218,15 +237,6 @@ function IO:initialize() {
     txtBold=$(tput bold)
     txtItalic=$(tput sitm)
     txtUnderline=$(tput smul)
-  else
-    txtReset=""
-    txtError=""
-    txtInfo=""
-    txtInfo=""
-    txtWarn=""
-    txtBold=""
-    txtItalic=""
-    txtUnderline=""
   fi
 
   [[ $(echo -e '\xe2\x82\xac') == '€' ]] && unicode=1 || unicode=0 # detect if unicode is supported
@@ -239,15 +249,6 @@ function IO:initialize() {
     config_icon="🌱"
     clean_icon="🧽"
     require_icon="🔌"
-  else
-    char_succes="OK "
-    char_fail="!! "
-    char_alert="?? "
-    char_wait="..."
-    info_icon="(i)"
-    config_icon="[c]"
-    clean_icon="[c]"
-    require_icon="[r]"
   fi
   error_prefix="${txtError}>${txtReset}"
 }
