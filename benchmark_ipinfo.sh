@@ -36,6 +36,8 @@ Script:main() {
   IO:log "[$script_basename] $script_version started"
 
   Os:require "awk"
+  Os:require "curl"
+  Os:require "jq"
 
   case "${action,,}" in
     run)
@@ -118,6 +120,7 @@ function get_ip_info(){
     url=$(eval echo "${url//&/\\&}")
     IO:debug "Getting URL $url"
     curl -s "$url" | jq . > "$output_file"
+    sleep 1
   fi
 
 }
