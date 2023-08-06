@@ -1,11 +1,4 @@
 #!/usr/bin/env bash
-### ==============================================================================
-### SO HOW DO YOU PROCEED WITH YOUR SCRIPT?
-### 1. define the flags/options/parameters and defaults you need in Option:config()
-### 2. implement the different actions in Script:main() with helper functions
-### 3. implement helper functions you defined in previous step
-### ==============================================================================
-
 ### Created by pforret ( pforret ) on 2023-08-06
 ### Based on https://github.com/pforret/bashew 1.20.2
 script_version="0.0.1" # if there is a VERSION.md in this script's folder, that will have priority over this version number
@@ -21,28 +14,6 @@ install_package=""
 temp_files=()
 
 function Option:config() {
-  ### Change the next lines to reflect which flags/options/parameters you need
-  ### flag:   switch a flag 'on' / no value specified
-  ###     flag|<short>|<long>|<description>
-  ###     e.g. "-v" or "--verbose" for verbose output / default is always 'off'
-  ###     will be available as $<long> in the script e.g. $verbose
-  ### option: set an option / 1 value specified
-  ###     option|<short>|<long>|<description>|<default>
-  ###     e.g. "-e <extension>" or "--extension <extension>" for a file extension
-  ###     will be available a $<long> in the script e.g. $extension
-  ### list: add an list/array item / 1 value specified
-  ###     list|<short>|<long>|<description>| (default is ignored)
-  ###     e.g. "-u <user1> -u <user2>" or "--user <user1> --user <user2>"
-  ###     will be available a $<long> array in the script e.g. ${user[@]}
-  ### param:  comes after the options
-  ###     param|<type>|<long>|<description>
-  ###     <type> = 1 for single parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = ? for optional parameters - e.g. param|1|output expects 1 parameter <output>
-  ###     <type> = n for list parameter    - e.g. param|n|inputs expects <input1> <input2> ... <input99>
-  ###     will be available as $<long> in the script after option/param parsing
-  ### choice:  is like a param, but when there are limited options
-  ###     choice|<type>|<long>|<description>|choice1,choice2,...
-  ###     <type> = 1 for single parameters - e.g. param|1|output expects 1 parameter <output>
   grep <<< "
 #commented lines will be filtered
 flag|h|help|show usage
@@ -51,7 +22,8 @@ flag|v|verbose|also show debug messages
 flag|f|force|do not ask for confirmation (always yes)
 option|l|log_dir|folder for log files |$HOME/log/$script_prefix
 option|t|tmp_dir|folder for temp files|/tmp/$script_prefix
-choice|1|action|action to perform|action1,action2,check,env,update
+option|O|OUT_DIR|output folder|output
+choice|1|action|action to perform|run,ip,list,check,env,update
 #param|?|input|input file/text
 " -v -e '^#' -e '^\s*$'
 }
@@ -66,16 +38,41 @@ Script:main() {
   Os:require "awk"
 
   case "${action,,}" in
-    action1)
-      #TIP: use «$script_prefix action1» to ...
-      #TIP:> $script_prefix action1
-      do_action1
+    run)
+      #TIP: use «$script_prefix run» to check all IP addresses and all IP API services
+      #TIP:> $script_prefix run
+      for ip in $(list_test_ips) ; do
+        IO:success "#  IP: $ip"
+        for service in $(list_services) ; do
+          IO:progress " - SVC: $service"
+          get_ip_info "$ip" "$service"
+        done
+      done
       ;;
 
-    action2)
-      #TIP: use «$script_prefix action2» to ...
-      #TIP:> $script_prefix action2
-      do_action2
+    ip)
+      #TIP: use «$script_prefix ip» to check one IP address for all IP API Services
+      #TIP:> $script_prefix ip 1.1.1.1
+        for service in $(INI:list_sections) ; do
+          get_ip_info "$ip" "$service"
+        done
+      ;;
+
+    list)
+      #TIP: use «$script_prefix list» to ...
+      #TIP:> $script_prefix list
+      IO:success "List of IP API services"
+      print_services_info
+      IO:success "List of IP addresses to check"
+      list_test_ips \
+      | while read -r ip ; do
+          server="$(dig -x "$ip" +short)"
+          if [[ -n "$server" ]] ; then
+            printf "%-16s --> %s\n" "$ip" "$server"
+          else
+            printf "%-16s --> ?\n" "$ip"
+          fi
+        done
       ;;
 
     check | env)
@@ -107,18 +104,82 @@ Script:main() {
 ## Put your helper scripts here
 #####################################################################
 
-do_action1() {
-  IO:log "action1"
-  # Examples of required binaries/scripts and how to install them
-  # Os:require "ffmpeg"
-  # Os:require "convert" "imagemagick"
-  # Os:require "IO:progressbar" "basher install pforret/IO:progressbar"
-  # (code)
+function get_ip_info(){
+  local ip="$1"
+  local service="$2"
+  local url
+
+  output_file="$OUT_DIR/$ip/$service.json"
+  [[ ! -d "$OUT_DIR/$ip" ]] && mkdir -p "$OUT_DIR/$ip"
+  if [[ ! -f "$output_file" ]] ; then
+    load_service_parameters "$service"
+    url="${ini_values[endpoint]}"
+    url=$(echo "$url" | awk -v ip="$ip" '{gsub(/{ip}/, ip); print}')
+    curl -s "$url" | jq . > "$output_file"
+  fi
+
 }
 
-do_action2() {
-  IO:log "action2"
-  # (code)
+function print_services_info(){
+  local file="$script_install_folder/config/test.services.ini"
+  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
+
+  for section in $(INI:list_sections "$file") ; do
+    IO:print "* $section"
+    INI:load_section "$file" "$section"
+    for key in "${!ini_values[@]}" ; do
+       value="${ini_values[$key]}"
+       echo  "  - $key = $value"
+    done
+  done
+}
+
+function list_ip_apis(){
+  local file="$script_install_folder/config/test.services.ini"
+  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
+  INI:list_sections "$file"
+}
+
+function list_test_ips(){
+  local file="$script_install_folder/config/test.ips.txt"
+  < "$file" awk '/^[0-9]+/ { print $1}'
+}
+
+function load_service_parameters(){
+    local file="$script_install_folder/config/test.services.ini"
+    local service="$1"
+    INI:load_section "$file" "$service"
+}
+
+function list_services(){
+    local file="$script_install_folder/config/test.services.ini"
+    INI:list_sections "$file"
+}
+
+# inspired by https://www.baeldung.com/linux/ini-file-bash-array-convert
+declare -A ini_values
+
+function INI:load_section(){
+  local file="$1"
+  local section="$2"
+  local key
+  local value
+
+  while IFS="=" read -r key value ; do
+    value=$(echo "$value" | tr -d '"' )
+    ini_values["${key}"]="${value}"
+  done <<< "$(INI:filter_section "$1" "$section")"
+}
+
+function INI:list_sections (){
+  < "$1" awk '/\[.*\]/ {gsub(/[\[\]]/,""); print $0}'
+}
+
+function INI:filter_section(){
+    < "$1" awk -v section="$2" '
+      BEGIN     { copy=0 }
+      /\[.*\]/  { copy = ($0 == "[" section "]") }
+      /\w.+=.+/ { if(copy) print $0 } '
 
 }
 

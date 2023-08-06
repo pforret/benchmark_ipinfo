@@ -1,0 +1,10 @@
+# www.dropbox.com
+162.125.65.18
+# the-piratebay.com via CloudFlare
+188.114.96.0
+# blog.forret.com via Github Pages
+185.199.111.153
+# www.forret.com on Gandi
+217.70.180.136
+
+
