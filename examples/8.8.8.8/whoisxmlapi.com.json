@@ -1,0 +1,29 @@
+{
+  "ip": "8.8.8.8",
+  "location": {
+    "country": "US",
+    "region": "Kansas",
+    "city": "McDonald",
+    "lat": 39.78583,
+    "lng": -101.37572,
+    "postalCode": "",
+    "timezone": "-05:00",
+    "geonameId": 5445948
+  },
+  "domains": [
+    "49tt.cn",
+    "afx15.xyz",
+    "assosex.eu",
+    "canagan.be",
+    "chatlinkacp.top"
+  ],
+  "as": {
+    "asn": 15169,
+    "name": "GOOGLE",
+    "route": "8.8.8.0/24",
+    "domain": "https://about.google/intl/en/",
+    "type": "Content"
+  },
+  "isp": "Google LLC",
+  "connectionType": ""
+}

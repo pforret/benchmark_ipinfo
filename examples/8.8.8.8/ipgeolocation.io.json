@@ -1,0 +1,39 @@
+{
+  "ip": "8.8.8.8",
+  "continent_code": "NA",
+  "continent_name": "North America",
+  "country_code2": "US",
+  "country_code3": "USA",
+  "country_name": "United States",
+  "country_capital": "Washington, D.C.",
+  "state_prov": "California",
+  "state_code": "US-CA",
+  "district": "",
+  "city": "Mountain View",
+  "zipcode": "94043-1351",
+  "latitude": "37.42240",
+  "longitude": "-122.08421",
+  "is_eu": false,
+  "calling_code": "+1",
+  "country_tld": ".us",
+  "languages": "en-US,es-US,haw,fr",
+  "country_flag": "https://ipgeolocation.io/static/flags/us_64.png",
+  "geoname_id": "6301403",
+  "isp": "Google LLC",
+  "connection_type": "",
+  "organization": "Google LLC",
+  "currency": {
+    "code": "USD",
+    "name": "US Dollar",
+    "symbol": "$"
+  },
+  "time_zone": {
+    "name": "America/Los_Angeles",
+    "offset": -8,
+    "offset_with_dst": -7,
+    "current_time": "2023-08-06 12:51:05.121-0700",
+    "current_time_unix": 1691351465.121,
+    "is_dst": true,
+    "dst_savings": 1
+  }
+}
