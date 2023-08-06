@@ -46,7 +46,7 @@ Script:main() {
       for ip in $(list_test_ips) ; do
         IO:success "#  IP: $ip                         "
         for service in $(list_services) ; do
-          IO:progress " - SVC: $service"
+          IO:progress "SVC: $service"
           get_ip_info "$ip" "$service"
         done
       done
@@ -56,6 +56,7 @@ Script:main() {
       #TIP: use «$script_prefix ip» to check one IP address for all IP API Services
       #TIP:> $script_prefix ip 1.1.1.1
         for service in $(list_services) ; do
+          IO:progress " - SVC: $service"
           get_ip_info "$input" "$service"
         done
       ;;

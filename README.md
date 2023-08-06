@@ -14,23 +14,27 @@ Test and compare IP Info lookup APIs
 
 ```
 Program : benchmark_ipinfo  by peter@forret.com
-Version : v0.0.1 (Apr 22 16:07:13 2023)
+Version : v0.2.2 (2023-08-06 20:54)
 Purpose : Test and compare IP Info lookup APIs
-Usage   : benchmark_ipinfo [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] <action>
+Usage   : benchmark_ipinfo [-h] [-q] [-v] [-f] [-l <log_dir>] [-t <tmp_dir>] [-O <OUT_DIR>] <action> <input?>
 Flags, options and parameters:
     -h|--help        : [flag] show usage [default: off]
     -q|--quiet       : [flag] no output [default: off]
     -v|--verbose     : [flag] also show debug messages [default: off]
     -f|--force       : [flag] do not ask for confirmation (always yes) [default: off]
-    -l|--log_dir <?> : [option] folder for log files   [default: /Users/pforret/log/script]
-    -t|--tmp_dir <?> : [option] folder for temp files  [default: /tmp/script]
-    <action>         : [choice] action to perform  [options: action1,action2,check,env,update]
-                                  
+    -l|--log_dir <?> : [option] folder for log files   [default: /home/pforret/log/benchmark_ipinfo]
+    -t|--tmp_dir <?> : [option] folder for temp files  [default: /tmp/benchmark_ipinfo]
+    -O|--OUT_DIR <?> : [option] output folder  [default: output]
+    <action>         : [choice] action to perform  [options: run,ip,list,check,env,update]
+    <input>          : [parameter] input ip address (optional)
+                                  pforret:pforret/benchmark_ipinfo.git
 ### TIPS & EXAMPLES
-* use benchmark_ipinfo action1 to ...
-  benchmark_ipinfo action1
-* use benchmark_ipinfo action2 to ...
-  benchmark_ipinfo action2
+* use benchmark_ipinfo run to check all IP addresses and all IP API services
+  benchmark_ipinfo run
+* use benchmark_ipinfo ip to check one IP address for all IP API Services
+  benchmark_ipinfo ip 1.1.1.1
+* use benchmark_ipinfo list to kist all used API services and IP addresses
+  benchmark_ipinfo list
 * use benchmark_ipinfo check to check if this script is ready to execute and what values the options/flags are
   benchmark_ipinfo check
 * use benchmark_ipinfo env to generate an example .env file
