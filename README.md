@@ -74,6 +74,7 @@ Flags, options and parameters:
 * ipapi.co
 * ipgeolocation.io (requires API key)
 * ipinfo.io
+* ipqualityscore.com (requires API key)
 * ipstack.com (requires API key)
 * ipwho.is
 * whoisxmlapi.com (requires API key)
