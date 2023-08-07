@@ -48,12 +48,38 @@ Flags, options and parameters:
 ## ⚡️ Examples
 
 ```bash
+> benchmark_ipinfo list
+# list all IPs and APIs
+
+> benchmark_ipinfo run
+# lookup all IPs on all APIs
+
+> benchmark_ipinfo ip 8.8.4.4
+# lookup 8.8.4.4 on all APIs
+
 > benchmark_ipinfo -h 
 # get extended usage info
+
 > benchmark_ipinfo env > .env
 # create a .env file with default values
 ```
 
+## List of APIs
+
+✅  List of IP API services
+
+* abstractapi.com
+* db-ip.com
+* getgeoapi.com
+* ip2location.io
+* ip-api.com
+* ipapi.co
+* ipgeolocation.io
+* ipinfo.io
+* ipstack.com
+* ipwho.is
+* whoisxmlapi.com
+  
 ## 🚀 Installation
 
 with [basher](https://github.com/basherpm/basher)
