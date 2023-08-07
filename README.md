@@ -64,9 +64,7 @@ Flags, options and parameters:
 # create a .env file with default values
 ```
 
-## List of APIs
-
-✅  List of IP API services
+## ✅ List of APIs
 
 * abstractapi.com
 * db-ip.com
