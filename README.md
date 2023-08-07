@@ -66,17 +66,17 @@ Flags, options and parameters:
 
 ## ✅ List of APIs
 
-* abstractapi.com
+* abstractapi.com (requires API key)
 * db-ip.com
-* getgeoapi.com
-* ip2location.io
+* getgeoapi.com (requires API key)
+* ip2location.io (requires API key)
 * ip-api.com
 * ipapi.co
-* ipgeolocation.io
+* ipgeolocation.io (requires API key)
 * ipinfo.io
-* ipstack.com
+* ipstack.com (requires API key)
 * ipwho.is
-* whoisxmlapi.com
+* whoisxmlapi.com (requires API key)
   
 ## 🚀 Installation
 

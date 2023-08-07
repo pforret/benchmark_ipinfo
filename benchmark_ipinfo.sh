@@ -69,7 +69,7 @@ Script:main() {
       IO:success "List of IP addresses to check"
       list_test_ips \
       | while read -r ip ; do
-          server="$(dig -x "$ip" +short)"
+          server="$(dig -x "$ip" +short | head -1)"
           if [[ -n "$server" ]] ; then
             printf "%-16s --> %s\n" "$ip" "$server"
           else
@@ -131,12 +131,13 @@ function print_services_info(){
   [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
 
   for section in $(INI:list_sections "$file") ; do
-    IO:print "* $section"
     INI:load_section "$file" "$section"
-    for key in "${!ini_values[@]}" ; do
-       value="${ini_values[$key]}"
-       echo  "  - $key = $value"
-    done
+    url="${ini_values[endpoint]}"
+    if [[ "$url" =~ '$' ]] ; then
+      IO:print "* $section (requires API key)"
+    else
+      IO:print "* $section"
+    fi
   done
 }
 
