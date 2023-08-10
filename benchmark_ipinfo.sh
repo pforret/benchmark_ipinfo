@@ -43,6 +43,8 @@ Script:main() {
     run)
       #TIP: use «$script_prefix run» to check all IP addresses and all IP API services
       #TIP:> $script_prefix run
+      local ip
+      local service
       for ip in $(list_test_ips) ; do
         IO:success "#  IP: $ip                         "
         for service in $(list_services) ; do
@@ -112,8 +114,12 @@ function get_ip_info(){
   local service="$2"
   local url
 
-  output_file="$OUT_DIR/$ip/$service.json"
-  [[ ! -d "$OUT_DIR/$ip" ]] && mkdir -p "$OUT_DIR/$ip"
+  local ip_folder=${ip//:/_}
+  local output_folder="$OUT_DIR/$ip_folder"
+  [[ ! -d "$output_folder" ]] && mkdir -p "$output_folder"
+  IO:debug "Output folder: $output_folder"
+
+  local output_file="$output_folder/$service.json"
   if [[ ! -f "$output_file" ]] ; then
     load_service_parameters "$service"
     url="${ini_values[endpoint]}"
