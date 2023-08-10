@@ -122,7 +122,7 @@ function get_ip_info(){
   local output_file="$output_folder/$service.json"
   if [[ ! -f "$output_file" ]] ; then
     load_service_parameters "$service"
-    url="${ini_values[endpoint]}"
+    url="${ini_values["endpoint"]}"
     url=$(echo "$url" | awk -v ip="$ip" '{gsub(/{ip}/, ip); print}')
     url=$(eval echo "${url//&/\\&}")
     IO:debug "Getting URL $url"
@@ -134,6 +134,7 @@ function get_ip_info(){
 
 function print_services_info(){
   local file="$script_install_folder/config/test.services.ini"
+  local section
   [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
 
   for section in $(INI:list_sections "$file") ; do
@@ -178,10 +179,14 @@ function INI:load_section(){
   local key
   local value
 
+  IO:debug "INI:load_section * SECTION $file - $section"
   while IFS="=" read -r key value ; do
-    value=$(echo "$value" | tr -d '"' )
-    ini_values["${key}"]="${value}"
-  done <<< "$(INI:filter_section "$1" "$section")"
+    IO:debug "INI: '$key' = '$value'"
+    [[ -z "$key" ]] && continue
+    [[ -z "$value" ]] && continue
+    value=$(echo "$value" | tr -d '"' ) # remove quotes
+    ini_values["$key"]="${value}"
+  done <<< "$(INI:filter_section "$file" "$section")"
 }
 
 function INI:list_sections (){
@@ -189,10 +194,15 @@ function INI:list_sections (){
 }
 
 function INI:filter_section(){
+  IO:debug "INI:filter_section * SECTION '$1' - '$2'"
     < "$1" awk -v section="$2" '
-      BEGIN     { copy=0 }
-      /\[.*\]/  { copy = ($0 == "[" section "]") }
-      /\w.+=.+/ { if(copy) print $0 } '
+    function ltrim(s) { sub(/^[ \t\r\n]+/, "", s); return s }
+    function rtrim(s) { sub(/[ \t\r\n]+$/, "", s); return s }
+    function trim(s) { return rtrim(ltrim(s)); }
+
+    BEGIN     { copy = 0; only_section = "[" trim(section) "]"; IFS = "="; OFS="_" }
+    /\[.*\]/  { copy = ($0 == only_section)}
+    /=/ { if(copy){print $0} } '
 
 }
 
