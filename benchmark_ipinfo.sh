@@ -41,12 +41,12 @@ Script:main() {
 
   case "${action,,}" in
     run)
-      #TIP: use «$script_prefix run» to check all IP addresses and all IP API services
+      #TIP: use «$script_prefix run» to check all configured IP addresses and all IP API services
       #TIP:> $script_prefix run
-      local ip
-      local service
-      for ip in $(list_test_ips) ; do
-        IO:success "#  IP: $ip                         "
+      local ip ip_name service
+      for ip_name in $(list_ips) ; do
+        ip="$(INI:get_value "$script_install_folder/config/ipinfo.ips.ini" "$ip_name" "ip")"
+        IO:success "IP: $ip ($ip_name)                    "
         for service in $(list_services) ; do
           IO:progress "API: $service"
           get_ip_info "$ip" "$service"
@@ -55,29 +55,22 @@ Script:main() {
       ;;
 
     ip)
-      #TIP: use «$script_prefix ip» to check one IP address for all IP API Services
+      #TIP: use «$script_prefix ip» to check one IP address for all configured IP API Services
       #TIP:> $script_prefix ip 1.1.1.1
-        for service in $(list_services) ; do
-          IO:progress "API: $service"
-          get_ip_info "$input" "$service"
-        done
+      ip="$input"
+      for service in $(list_services) ; do
+        IO:progress "API: $service"
+        get_ip_info "$ip" "$service"
+      done
       ;;
 
     list)
       #TIP: use «$script_prefix list» to ...
       #TIP:> $script_prefix list
       IO:success "List of IP API services"
-      print_services_info
+      list_services full
       IO:success "List of IP addresses to check"
-      list_test_ips \
-      | while read -r ip ; do
-          server="$(dig -x "$ip" +short | head -1)"
-          if [[ -n "$server" ]] ; then
-            printf "%-16s --> %s\n" "$ip" "$server"
-          else
-            printf "%-16s --> ?\n" "$ip"
-          fi
-        done
+      list_ips full
       ;;
 
     check | env)
@@ -116,94 +109,100 @@ function get_ip_info(){
 
   local ip_folder=${ip//:/_}
   local output_folder="$OUT_DIR/$ip_folder"
-  [[ ! -d "$output_folder" ]] && mkdir -p "$output_folder"
-  IO:debug "Output folder: $output_folder"
+  if [[ ! -d "$output_folder" ]] ; then
+    IO:debug "Output folder: $output_folder"
+    mkdir -p "$output_folder"
+  fi
 
   local output_file="$output_folder/$service.json"
+  local config_services="$script_install_folder/config/ipinfo.services.ini"
   if [[ ! -f "$output_file" ]] ; then
-    load_service_parameters "$service"
-    url="${ini_values["endpoint"]}"
+    # get endpoint from config file
+    url="$(INI:get_value "$config_services" "$service" "endpoint")"
+    # replace {ip} with actual IP address
     url=$(echo "$url" | awk -v ip="$ip" '{gsub(/{ip}/, ip); print}')
+    # urlencode the & and eval to resolve the key
     url=$(eval echo "${url//&/\\&}")
     IO:debug "Getting URL $url"
     curl -s "$url" | jq . > "$output_file"
-    sleep 1
+  fi
+  local json_city json_country_code json_country_name city country_code country_name
+  if [[ -f "$output_file" ]] ; then
+    city="-"
+    json_city="$(INI:get_value "$config_services" "$service" "json_city")"
+    [[ -n "$json_city" ]] && city="$(jq -r "$json_city" "$output_file")"
+
+    country_code="--"
+    json_country_code="$(INI:get_value "$config_services" "$service" "json_country_code")"
+    [[ -n "$json_country_code" ]] && country_code="$(jq -r "$json_country_code" "$output_file")"
+
+    country_name="-"
+    json_country_name="$(INI:get_value "$config_services" "$service" "json_country_name")"
+    [[ -n "$json_country_name" ]] && country_name="$(jq -r "$json_country_name" "$output_file")"
+
+    organisation="-"
+    json_organisation="$(INI:get_value "$config_services" "$service" "json_organisation")"
+    [[ -n "$json_organisation" ]] && organisation="$(jq -r "$json_organisation" "$output_file")"
+
+    printf "%20s : %2s  %-30s %-30s %-30s                 \n"  "$service" "$country_code" "$country_name" "$city" "$organisation"
   fi
 
 }
 
-function print_services_info(){
-  local file="$script_install_folder/config/test.services.ini"
-  local section
-  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
-
-  for section in $(INI:list_sections "$file") ; do
-    INI:load_section "$file" "$section"
-    url="${ini_values[endpoint]}"
-    if [[ "$url" =~ '$' ]] ; then
-      IO:print "* $section (requires API key)"
-    else
-      IO:print "* $section"
-    fi
-  done
-}
-
-function list_ip_apis(){
-  local file="$script_install_folder/config/test.services.ini"
-  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
-  INI:list_sections "$file"
-}
-
-function list_test_ips(){
-  local file="$script_install_folder/config/test.ips.txt"
-  < "$file" awk '/^[0-9]+/ { print $1}'
-}
-
-function load_service_parameters(){
-    local file="$script_install_folder/config/test.services.ini"
-    local service="$1"
-    INI:load_section "$file" "$service"
-}
-
 function list_services(){
-    local file="$script_install_folder/config/test.services.ini"
+  local file="$script_install_folder/config/ipinfo.services.ini"
+  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
+  if [[ -z "${1:-}" ]] ; then
     INI:list_sections "$file"
+  else
+    INI:list_sections "$file" \
+    | while read -r "section" ; do
+        requires_key="$(INI:get_value "$file" "$section" "requires_key")"
+        if [[ "$requires_key" == "1" ]] ; then
+         printf "* %-20s : %s\n" "$section" "(requires API key)"
+        else
+          IO:print "* $section"
+        fi
+    done
+  fi
 }
 
-# inspired by https://www.baeldung.com/linux/ini-file-bash-array-convert
-declare -A ini_values
-
-function INI:load_section(){
-  local file="$1"
-  local section="$2"
-  local key
-  local value
-
-  IO:debug "INI:load_section * SECTION $file - $section"
-  while IFS="=" read -r key value ; do
-    IO:debug "INI: '$key' = '$value'"
-    [[ -z "$key" ]] && continue
-    [[ -z "$value" ]] && continue
-    value=$(echo "$value" | tr -d '"' ) # remove quotes
-    ini_values["$key"]="${value}"
-  done <<< "$(INI:filter_section "$file" "$section")"
+function list_ips(){
+  local file="$script_install_folder/config/ipinfo.ips.ini"
+  [[ ! -f "$file" ]] && IO:die "Config file [$file] not found"
+  if [[ -z "${1:-}" ]] ; then
+    INI:list_sections "$file"
+  else
+    INI:list_sections "$file" \
+    | while read -r "section" ; do
+        ip="$(INI:get_value "$file" "$section" "ip")"
+        printf "* %-20s : %s\n" "$section" "$ip"
+    done
+  fi
 }
 
 function INI:list_sections (){
-  < "$1" awk '/\[.*\]/ {gsub(/[\[\]]/,""); print $0}'
+  < "$1" awk '/\[.*\]/ {gsub(/[\[\]]/,""); print $0}' \
+  | grep -v default
 }
 
-function INI:filter_section(){
-  IO:debug "INI:filter_section * SECTION '$1' - '$2'"
-    < "$1" awk -v section="$2" '
+function INI:get_value() {
+    local ini_file="$1"
+    local section="$2"
+    local key="$3"
+    < "$ini_file" awk -F= -v section="$section" -v key="$key" '
     function ltrim(s) { sub(/^[ \t\r\n]+/, "", s); return s }
     function rtrim(s) { sub(/[ \t\r\n]+$/, "", s); return s }
     function trim(s) { return rtrim(ltrim(s)); }
 
-    BEGIN     { copy = 0; only_section = "[" trim(section) "]"; IFS = "="; OFS="_" }
-    /\[.*\]/  { copy = ($0 == only_section)}
-    /=/ { if(copy){print $0} } '
-
+    BEGIN     { copy = 0; only_section = "[" trim(section) "]"; IFS = "=" ;  OFS = "="}
+    /\[.*\]/  { copy = ($0 == only_section) }
+    /\[default\]/  { copy = 1 }
+    /\[_default\]/  { copy = 1 }
+    /=/       { if(copy && trim($1) == key){gsub(/"/,""); value=$0 } }
+    END       { print value }
+    ' \
+    | cut -d= -f2-
 }
 
 #####################################################################
