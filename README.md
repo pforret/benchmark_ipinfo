@@ -39,19 +39,19 @@ Flags, options and parameters:
 # lookup all IPs on all APIs
 
 > benchmark_ipinfo ip 195.142.68.93
-     abstractapi.com : TR  Turkey                         Bursa                          Superonline Iletisim Hizmetleri                 
-           db-ip.com : TR  Turkey                         Kartal                         -                                              
-       getgeoapi.com : --  -                              Bursa                          -                                              
-      ip2location.io : TR  Turkey                         Istanbul                       Superonline Iletisim Hizmetleri A.S.                 
-          ip-api.com : TR  Turkey                         Bursa                          BNG-SOL                                        
-            ipapi.co : TR  Turkey                         Bursa                          Superonline Iletisim Hizmetleri A.S.                 
-    ipgeolocation.io : TR  Turkey                         Şişli                        Superonline Iletisim Hizmetleri A.S.                 
-           ipify.org : TR  -                              Kartal                         TELLCOM-AS                                     
-           ipinfo.io : TR  -                              Bursa                          AS34984 Superonline Iletisim Hizmetleri A.S.                 
-  ipqualityscore.com : TR  -                              Bursa                          Turkcell Superonline                           
-         ipstack.com : TR  Turkey                         Bursa                          -                                              
-            ipwho.is : TR  Turkey                         Bursa                          SOL-Customer-MIX                               
-     whoisxmlapi.com : TR  -                              Kartal                         TELLCOM-AS     
+     abstractapi.com : TR  Turkey      Bursa          Superonline Iletisim Hizmetleri                 
+           db-ip.com : TR  Turkey      Kartal         -                                              
+       getgeoapi.com : --  -           Bursa          -                                              
+      ip2location.io : TR  Turkey      Istanbul       Superonline Iletisim Hizmetleri A.S.                 
+          ip-api.com : TR  Turkey      Bursa          BNG-SOL                                        
+            ipapi.co : TR  Turkey      Bursa          Superonline Iletisim Hizmetleri A.S.                 
+    ipgeolocation.io : TR  Turkey      Şişli          Superonline Iletisim Hizmetleri A.S.                 
+           ipify.org : TR  -           Kartal         TELLCOM-AS                                     
+           ipinfo.io : TR  -           Bursa          AS34984 Superonline Iletisim Hizmetleri A.S.
+  ipqualityscore.com : TR  -           Bursa          Turkcell Superonline                           
+         ipstack.com : TR  Turkey      Bursa          -                                              
+            ipwho.is : TR  Turkey      Bursa          SOL-Customer-MIX                               
+     whoisxmlapi.com : TR  -           Kartal         TELLCOM-AS     
             
 > benchmark_ipinfo -h 
 # get extended usage info
