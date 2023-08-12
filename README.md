@@ -60,20 +60,21 @@ Flags, options and parameters:
 # create a .env file with default values
 ```
 
-## ✅ List of APIs
-
-* abstractapi.com (requires API key)
+## ✅  List of IP API services
+* abstractapi.com      : (requires API key)
 * db-ip.com
-* getgeoapi.com (requires API key)
-* ip2location.io (requires API key)
+* getgeoapi.com        : (requires API key)
+* ip2location.io       : (requires API key)
 * ip-api.com
 * ipapi.co
-* ipgeolocation.io (requires API key)
+* ipdata.co            : (requires API key)
+* ipgeolocation.io     : (requires API key)
+* ipify.org            : (requires API key)
 * ipinfo.io
-* ipqualityscore.com (requires API key)
-* ipstack.com (requires API key)
+* ipqualityscore.com   : (requires API key)
+* ipstack.com          : (requires API key)
 * ipwho.is
-* whoisxmlapi.com (requires API key)
+* whoisxmlapi.com      : (requires API key)
   
 ## 🚀 Installation
 
