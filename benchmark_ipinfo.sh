@@ -125,6 +125,7 @@ function get_ip_info(){
     url=$(eval echo "${url//&/\\&}")
     IO:debug "Getting URL $url"
     curl -s "$url" | jq . > "$output_file"
+    [[ $(du -b "$output_file" | awk '{print $1}') -eq 0 ]] && rm -f "$output_file"
   fi
   local json_city json_country_code json_country_name city country_code country_name
   if [[ -f "$output_file" ]] ; then
