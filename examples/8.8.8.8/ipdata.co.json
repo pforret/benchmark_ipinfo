@@ -1,0 +1,71 @@
+{
+  "ip": "8.8.8.8",
+  "is_eu": false,
+  "city": null,
+  "region": null,
+  "region_code": null,
+  "region_type": null,
+  "country_name": "United States",
+  "country_code": "US",
+  "continent_name": "North America",
+  "continent_code": "NA",
+  "latitude": 37.750999450683594,
+  "longitude": -97.8219985961914,
+  "postal": null,
+  "calling_code": "1",
+  "flag": "https://ipdata.co/flags/us.png",
+  "emoji_flag": "🇺🇸",
+  "emoji_unicode": "U+1F1FA U+1F1F8",
+  "asn": {
+    "asn": "AS15169",
+    "name": "Google LLC",
+    "domain": "google.com",
+    "route": "8.8.8.0/24",
+    "type": "business"
+  },
+  "languages": [
+    {
+      "name": "English",
+      "native": "English",
+      "code": "en"
+    }
+  ],
+  "currency": {
+    "name": "US Dollar",
+    "code": "USD",
+    "symbol": "$",
+    "native": "$",
+    "plural": "US dollars"
+  },
+  "time_zone": {
+    "name": null,
+    "abbr": null,
+    "offset": null,
+    "is_dst": null,
+    "current_time": null
+  },
+  "threat": {
+    "is_tor": false,
+    "is_icloud_relay": false,
+    "is_proxy": false,
+    "is_datacenter": false,
+    "is_anonymous": false,
+    "is_known_attacker": true,
+    "is_known_abuser": true,
+    "is_threat": true,
+    "is_bogon": false,
+    "blocklists": [
+      {
+        "name": "isx.fr",
+        "site": "https://isx.fr",
+        "type": "general"
+      },
+      {
+        "name": "myip.ms",
+        "site": "https://myip.ms",
+        "type": "bots"
+      }
+    ]
+  },
+  "count": "0"
+}
