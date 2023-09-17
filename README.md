@@ -87,6 +87,15 @@ or with `git`
 	$ git clone https://github.com/pforret/benchmark_ipinfo.git
 	$ cd benchmark_ipinfo
 
+You will need to provide (free) API keys for some of the services. You can get them on the respective websites. 
+
+* Copy `.env.example` to `.env` 
+* For each API, there's the URL where you can find the key
+```bash
+# https://dashboard.ipdata.co/
+IPDATA_KEY=<your key>
+```
+
 ## 📝 Acknowledgements
 
 * script created with [bashew](https://github.com/pforret/bashew)

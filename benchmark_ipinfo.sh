@@ -108,13 +108,14 @@ function get_ip_info(){
   local url
 
   local ip_folder=${ip//:/_}
-  local output_folder="$OUT_DIR/$ip_folder"
+  local ip_name=${ip_folder:0:15}
+  local output_folder="$OUT_DIR/$service"
   if [[ ! -d "$output_folder" ]] ; then
     IO:debug "Output folder: $output_folder"
     mkdir -p "$output_folder"
   fi
 
-  local output_file="$output_folder/$service.json"
+  local output_file="$output_folder/$ip_name.json"
   local config_services="$script_install_folder/config/ipinfo.services.ini"
   if [[ ! -f "$output_file" ]] ; then
     # get endpoint from config file
